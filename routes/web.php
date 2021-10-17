@@ -11,10 +11,11 @@
 |
 */
 
-Route::get('/', function () {
+Route::get('/home', function () {
     return view('welcome');
 });
 
 
-Route::get('/index', 'BooksController@index');
+Route::get('/', 'BooksController@index');
 Route::get('process_oauth_result', 'BooksController@verifyOath');
+Route::get('products', 'BooksController@showProducts');

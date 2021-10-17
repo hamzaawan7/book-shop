@@ -2,11 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+use Guzzle\Http\Exception\ClientErrorResponseException;
+use GuzzleHttp\Exception\ServerException;
+use GuzzleHttp\Exception\BadResponseException;
+use Illuminate\Support\Facades\DB;
+use App\Books;
 use Illuminate\Http\Request;
 use Oseintow\Shopify\Facades\Shopify;
 
 class BooksController extends Controller
 {
+    private $accessToken;
+
     /**
      * Display a listing of the resource.
      *
@@ -14,21 +23,52 @@ class BooksController extends Controller
      */
     public function index()
     {
-        $shopUrl = "bookstore0071.myshopify.com";
         $scope = ["write_products","read_orders"];
-        $redirectUrl = "https://309d-117-20-28-188.ngrok.io/book-store/public/process_oauth_result";
-        //$accessToken = "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";
-        $shopify = Shopify::setShopUrl($shopUrl);
-        return redirect()->to($shopify->getAuthorizeUrl($scope,$redirectUrl));
+        $shopify = Shopify::setShopUrl(env("SHOP_URL"));
+        return redirect()->to($shopify->getAuthorizeUrl($scope,env("REDIRECT_URL")));
     }
 
     public function verifyOath(Request $request)
     {
-        $shopUrl = "bookstore0071.myshopify.com";
-        $accessToken = Shopify::setShopUrl($shopUrl)->getAccessToken($request->code);
-       // $products = Shopify::setShopUrl($shopUrl)->setAccessToken($accessToken)->get("admin/products.json");
+        $accessToken = Shopify::setShopUrl(env("SHOP_URL"))->getAccessToken($request->code);
+        $ifAccessTokenExists = DB::table('access_token')->get();
+        if($ifAccessTokenExists->isEmpty())
+        {
+            DB::table('access_token')->insert([
+                'access_token' => $accessToken
+            ]);
+        }else{
+            DB::table('access_token')
+              ->where('id', 1)
+              ->update(['access_token' => $accessToken]);
+        }
+      
+        return redirect()->to('http://localhost:8000/home');
+    }
 
-        dd($accessToken);
+    public function showProducts()
+    {
+        $this->storeProducts();
+        $books = \App\Books::get()->toArray();
+        return $books;
+    }
+
+    public function storeProducts()
+    {
+        $accessToken = DB::table('access_token')->where('id', 1)->value('access_token');
+        $products = Shopify::setShopUrl(env("SHOP_URL"))->setAccessToken($accessToken)->get("admin/products.json");
+        foreach($products as $product)
+        {
+             $ifBookAlreadyExists = \App\Books::where('book_id',$product->id)->first();
+             if(!$ifBookAlreadyExists)
+             {
+                $book = new Books;
+                $book->book_id = $product->id;
+                $book->author = $product->vendor;
+                $book->wholesale_price = $product->variants[0]->price;
+                $book->save();
+             }
+        }
     }
 
     /**

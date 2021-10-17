@@ -18,24 +18,13 @@ function MainNavBar(props) {
       <div>
         <Navbar color="dark" dark expand="md">
          
-          <NavbarBrand tag={RRNavLink} to="/" onClick={() => setIsOpen(false)}>
+          <NavbarBrand>
             <img src={logo} alt="logo" />
           </NavbarBrand>
        
             
           <Collapse isOpen={isOpen} navbar>
             <Nav className="ml-auto" navbar>    
-
-              <NavItem>
-                <NavLink
-                  tag={RRNavLink}
-                  to={"/"}
-                  activeClassName="active"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Home
-                </NavLink>
-              </NavItem>
 
               <NavItem>
                 <NavLink

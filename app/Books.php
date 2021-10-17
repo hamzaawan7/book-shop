@@ -6,9 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Books extends Model
 {
-   
-    use HasApiTokens, HasFactory, Notifiable;
-
     /**
      * The attributes that are mass assignable.
      *
@@ -20,4 +17,6 @@ class Books extends Model
         'author',
         'wholesale_price',
     ];
+
+    protected $table = 'books';
 }
