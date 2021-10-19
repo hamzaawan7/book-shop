@@ -1,5 +1,5 @@
 import React from "react";
-import heart from './heart_loader.gif';
+import heart from './assets/heart_loader.gif';
 
 export default function Loading() {
   return (

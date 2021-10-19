@@ -15,11 +15,12 @@ class CreateBooksTable extends Migration
     {
         Schema::create('books', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('book_id')->unique();
-            $table->string('no_of_pages')->nullable();
-            $table->longText('author')->nullable();
-            $table->string('wholesale_price')->nullable();
-            $table->timestamp('failed_at')->useCurrent();
+
+            $table->string('shopify_product_id')->unique();
+            $table->integer('no_of_pages')->nullable();
+            $table->string('author')->nullable();
+            $table->double('wholesale_price')->nullable();
+
             $table->timestamps();
         });
     }

@@ -13,10 +13,12 @@
 
 Route::get('/home', function () {
     return view('welcome');
-});
+})->name('home');
 
 
-Route::get('/', 'BooksController@index');
-Route::get('process_oauth_result', 'BooksController@verifyOath');
-Route::get('products', 'BooksController@showProducts');
-Route::get('books/get-book/{id}', 'BooksController@getBook');
+Route::get('/', 'BooksController@connect');
+
+Route::get('process_oauth_result', 'BooksController@verifyOauth');
+
+Route::get('books', 'BooksController@index')->name('books');
+Route::get('books/{id}', 'BooksController@show')->name('show-book');

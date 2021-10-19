@@ -2,154 +2,86 @@
 
 namespace App\Http\Controllers;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
-use Guzzle\Http\Exception\ClientErrorResponseException;
-use GuzzleHttp\Exception\ServerException;
-use GuzzleHttp\Exception\BadResponseException;
-use Illuminate\Support\Facades\DB;
-use App\Books;
-use App\AccessToken;
-use Illuminate\Http\Request;
-use Oseintow\Shopify\Facades\Shopify;
+use App\Models\Books;
+use App\Repositories\AccessTokenRepository;
+use App\Repositories\BooksRepository;
+use App\Services\Shopify\ShopifyStore;
 
+/**
+ * Class BooksController
+ * @package App\Http\Controllers
+ */
 class BooksController extends Controller
 {
-    private $accessToken;
+    /**
+     * @var AccessTokenRepository
+     */
+    private $accessTokenRepository;
+    /**
+     * @var ShopifyStore
+     */
+    private $shopifyStore;
+    /**
+     * @var BooksRepository
+     */
+    private $booksRepository;
 
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * BooksController constructor.
+     * @param AccessTokenRepository $accessTokenRepository
+     * @param ShopifyStore $shopifyStore
+     * @param BooksRepository $booksRepository
      */
-    public function index()
-    {
-        $scope = ["write_products","read_orders"];
-        $shopify = Shopify::setShopUrl(env("SHOP_URL"));
-        return redirect()->to($shopify->getAuthorizeUrl($scope,env("REDIRECT_URL")));
+    public function __construct(
+        AccessTokenRepository $accessTokenRepository,
+        ShopifyStore $shopifyStore,
+        BooksRepository $booksRepository
+    ) {
+        $this->accessTokenRepository = $accessTokenRepository;
+        $this->shopifyStore = $shopifyStore;
+        $this->booksRepository = $booksRepository;
     }
 
-    public function verifyOath(Request $request)
+    /**
+     * @return array
+     */
+    public function index(): array
     {
-        $accessToken = Shopify::setShopUrl(env("SHOP_URL"))->getAccessToken($request->code);
-        $ifAccessTokenExists = AccessToken::get()->first();
-        if($ifAccessTokenExists == null)
-        {
-            $token = new AccessToken;
-            $token->access_token = $accessToken;
-            $token->save();
-        }else{
-            $token = AccessToken::get()->first();
-            $token->access_token = $accessToken;
-            $token->save();
+        $accessToken = $this->accessTokenRepository->findAccessToken();
+        $books = $this->shopifyStore->getAllProducts($accessToken);
+        $allBooks = [];
+
+        foreach ($books as $bookSP) {
+            $bookDB = $this->booksRepository->save($bookSP);
+            $allBooks[] = [
+                'shopify_product_id' => $bookDB->shopify_product_id,
+                'title'              => $bookSP->title,
+                'author'             => $bookDB->author,
+                'price'              => $bookSP->variants[0]->price,
+            ];
         }
-      
-        return redirect()->to('http://localhost:8000/home');
-    }
 
-    public function showProducts()
-    {
-        $this->storeProducts();
-        $books = \App\Books::get()->toArray();
-        return $books;
-    }
-
-    public function storeProducts()
-    {
-        $accessToken = AccessToken::get()->first()->value('access_token');
-        $products = Shopify::setShopUrl(env("SHOP_URL"))->setAccessToken($accessToken)->get("admin/products.json");
-        foreach($products as $product)
-        {
-             $ifBookAlreadyExists = \App\Books::where('book_id',$product->id)->first();
-             if(!$ifBookAlreadyExists)
-             {
-                $book = new Books;
-                $book->book_id = $product->id;
-                $book->author = $product->vendor;
-                $book->wholesale_price = $product->variants[0]->price;
-                $book->save();
-             }else
-             {
-                $book = Books::where('book_id',$product->id)->first();
-                $book->book_id = $product->id;
-                $book->author = $product->vendor;
-                $book->wholesale_price = $product->variants[0]->price;
-                $book->save();
-             }
-        }
-    }
-
-    public function getBook($book_id)
-    {
-        $accessToken = AccessToken::get()->first()->value('access_token');
-        $book = Shopify::setShopUrl(env("SHOP_URL"))->setAccessToken($accessToken)->get("admin/products/{$book_id}.json");
-       
-        return $book;
+        return $allBooks;
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
+     * @param $bookId
+     * @return array
      */
-    public function create()
+    public function show($bookId): array
     {
-        //
-    }
+        $accessToken = $this->accessTokenRepository->findAccessToken();
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        $bookSP = $this->shopifyStore->getByProductId($accessToken, $bookId);
+        $bookDB = $this->booksRepository->getByShopifyId($bookId);
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        return [
+            'shopify_product_id' => $bookDB->shopify_product_id,
+            'image'              => $bookSP['image']->src,
+            'title'              => $bookSP['title'],
+            'author'             => $bookDB->author,
+            'price'              => $bookSP['variants'][0]->price,
+            'pages'              => $bookDB->no_of_pages,
+        ];
     }
 }
