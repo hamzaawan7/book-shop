@@ -61,19 +61,19 @@ class Home extends Component {
                     {
                       !this.state.books || this.state.books.length == 0 ?
                       <tr>
-                        <td className="text-center" colSpan="100">No Chat History Found</td>
+                        <td className="text-center" colSpan="100">No Books Found</td>
                       </tr>
                       :
                       this.state.books.map((book, bookIndex) => {
                         return <tr key={bookIndex}>
                           <td>
-                          {book.book_id}
+                            <Link to={"Books/" + book.book_id}>{book.book_id}</Link>
                           </td>
                           <td>
-                          {book.author}
+                            {book.author}
                           </td>
                           <td>
-                          {book.wholesale_price}
+                            {book.wholesale_price}
                           </td>
                         </tr>
                     })

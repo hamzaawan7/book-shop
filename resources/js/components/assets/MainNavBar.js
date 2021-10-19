@@ -21,23 +21,7 @@ function MainNavBar(props) {
           <NavbarBrand>
             <img src={logo} alt="logo" />
           </NavbarBrand>
-       
-            
-          <Collapse isOpen={isOpen} navbar>
-            <Nav className="ml-auto" navbar>    
-
-              <NavItem>
-                <NavLink
-                  tag={RRNavLink}
-                  to={"book-page"}
-                  activeClassName="active"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Book Page
-                </NavLink>
-              </NavItem>
-            </Nav>
-          </Collapse>
+    
         </Navbar>
       </div >
     );

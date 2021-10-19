@@ -6,10 +6,11 @@ import {
   Switch,
   Route,
 } from "react-router-dom";
+const Home = React.lazy(() => import('./Home'));
+const Books = React.lazy(() => import('./Books'));
 
 function App() {
   const history = Intercept.getHistoryObject();
-  const Home = React.lazy(() => import('./Home'));
   return (
       <div className="body">
         <Router
@@ -23,6 +24,7 @@ function App() {
        
               <Switch>
                 <Route exact path="/home" component={Home} />
+                <Route exact path="/books/:id" component={Books} />
               </Switch>
           
           </div>

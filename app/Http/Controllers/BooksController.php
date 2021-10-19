@@ -9,6 +9,7 @@ use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Exception\BadResponseException;
 use Illuminate\Support\Facades\DB;
 use App\Books;
+use App\AccessToken;
 use Illuminate\Http\Request;
 use Oseintow\Shopify\Facades\Shopify;
 
@@ -31,16 +32,16 @@ class BooksController extends Controller
     public function verifyOath(Request $request)
     {
         $accessToken = Shopify::setShopUrl(env("SHOP_URL"))->getAccessToken($request->code);
-        $ifAccessTokenExists = DB::table('access_token')->get();
-        if($ifAccessTokenExists->isEmpty())
+        $ifAccessTokenExists = AccessToken::get()->first();
+        if($ifAccessTokenExists == null)
         {
-            DB::table('access_token')->insert([
-                'access_token' => $accessToken
-            ]);
+            $token = new AccessToken;
+            $token->access_token = $accessToken;
+            $token->save();
         }else{
-            DB::table('access_token')
-              ->where('id', 1)
-              ->update(['access_token' => $accessToken]);
+            $token = AccessToken::get()->first();
+            $token->access_token = $accessToken;
+            $token->save();
         }
       
         return redirect()->to('http://localhost:8000/home');
@@ -55,7 +56,7 @@ class BooksController extends Controller
 
     public function storeProducts()
     {
-        $accessToken = DB::table('access_token')->where('id', 1)->value('access_token');
+        $accessToken = AccessToken::get()->first()->value('access_token');
         $products = Shopify::setShopUrl(env("SHOP_URL"))->setAccessToken($accessToken)->get("admin/products.json");
         foreach($products as $product)
         {
@@ -63,6 +64,13 @@ class BooksController extends Controller
              if(!$ifBookAlreadyExists)
              {
                 $book = new Books;
+                $book->book_id = $product->id;
+                $book->author = $product->vendor;
+                $book->wholesale_price = $product->variants[0]->price;
+                $book->save();
+             }else
+             {
+                $book = Books::where('book_id',$product->id)->first();
                 $book->book_id = $product->id;
                 $book->author = $product->vendor;
                 $book->wholesale_price = $product->variants[0]->price;
