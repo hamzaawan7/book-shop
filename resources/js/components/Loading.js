@@ -2,10 +2,7 @@ import React from "react";
 import heart from './heart_loader.gif';
 
 export default function Loading() {
-  const { t, ready } = useTranslation(null, { useSuspense: false });
-  return ready === false ? (
-    Loading
-  ) : (
+  return (
     <div
       style={{
         height: "450px",

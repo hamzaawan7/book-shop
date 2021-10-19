@@ -67,7 +67,7 @@ class Home extends Component {
                       this.state.books.map((book, bookIndex) => {
                         return <tr key={bookIndex}>
                           <td>
-                            <Link to={"Books/" + book.book_id}>{book.book_id}</Link>
+                            <Link to={"books/" + book.book_id}>{book.book_id}</Link>
                           </td>
                           <td>
                             {book.author}

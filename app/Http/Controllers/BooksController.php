@@ -79,6 +79,14 @@ class BooksController extends Controller
         }
     }
 
+    public function getBook($book_id)
+    {
+        $accessToken = AccessToken::get()->first()->value('access_token');
+        $book = Shopify::setShopUrl(env("SHOP_URL"))->setAccessToken($accessToken)->get("admin/products/{$book_id}.json");
+       
+        return $book;
+    }
+
     /**
      * Show the form for creating a new resource.
      *
