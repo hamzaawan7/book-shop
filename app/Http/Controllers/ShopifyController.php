@@ -52,6 +52,6 @@ class ShopifyController extends Controller
         $accessToken = $this->shopifyStore->getAccessToken($request->code);
         $this->accessTokenRepository->save($accessToken);
 
-        return redirect()->to('home');
+        return redirect()->to('http://localhost:8000/home');
     }
 }
