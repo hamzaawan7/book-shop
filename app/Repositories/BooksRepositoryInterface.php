@@ -19,5 +19,5 @@ interface BooksRepositoryInterface
      * @param $shopifyId
      * @return Books
      */
-    public function getByShopifyId($shopifyId);
+    public function getByShopifyId($shopifyId): Books;
 }

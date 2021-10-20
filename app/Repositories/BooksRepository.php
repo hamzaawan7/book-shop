@@ -36,7 +36,7 @@ class BooksRepository implements BooksRepositoryInterface
      * @param $shopifyId
      * @return Books
      */
-    public function getByShopifyId($shopifyId)
+    public function getByShopifyId($shopifyId): Books
     {
         return Books::where('shopify_product_id', $shopifyId)->first();
     }
