@@ -47,7 +47,7 @@ class Home extends Component {
                                 All Available Books
                             </CardHeader>
                             <CardBody>
-                                <table className="table">
+                                <table striped bordered hover size="sm">
                                     <thead>
                                     <tr>
                                         <th>Book Name</th>
