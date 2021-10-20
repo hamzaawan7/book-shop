@@ -3,7 +3,6 @@
 namespace App\Repositories;
 
 use App\Models\Books;
-use Faker\Generator as Faker;
 
 /**
  * Class AccessTokenRepository
@@ -12,33 +11,19 @@ use Faker\Generator as Faker;
 class BooksRepository implements BooksRepositoryInterface
 {
     /**
-     * @var Faker
-     */
-    private $faker;
-
-    /**
-     * @param Faker $faker
-     */
-    public function setFaker(Faker $faker): void
-    {
-        $this->faker = $faker;
-    }
-
-    /**
      * @param $book
      * @return Books
      */
-    public function save($book): Books
+    public function save($bookSP, $faker)
     {
-        $book = $this->getByShopifyId($book->id);
+        $book = $this->getByShopifyId($bookSP->id);
 
         if (!$book) {
             $book = new Books();
-
-            $book->shopify_product_id = $book->id;
-            $book->author = $this->faker->name;
-            $book->no_of_pages = $this->faker->randomDigitNotNull;
-            $book->wholesale_price = $book->variants[0]->price;
+            $book->shopify_product_id = $bookSP->id;
+            $book->author = $faker->name;
+            $book->no_of_pages = $faker->randomDigitNotNull;
+            $book->wholesale_price = $bookSP->variants[0]->price;
 
             $book->save();
         }
@@ -50,7 +35,7 @@ class BooksRepository implements BooksRepositoryInterface
      * @param $shopifyId
      * @return Books
      */
-    public function getByShopifyId($shopifyId): Books
+    public function getByShopifyId($shopifyId)
     {
         return Books::where('shopify_product_id', $shopifyId)->first();
     }

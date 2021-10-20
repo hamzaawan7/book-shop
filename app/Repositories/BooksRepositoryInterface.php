@@ -12,11 +12,11 @@ interface BooksRepositoryInterface
      * @param $book
      * @return Books
      */
-    public function save($book): Books;
+    public function save($book, $faker);
 
     /**
      * @param $shopifyId
      * @return Books
      */
-    public function getByShopifyId($shopifyId): Books;
+    public function getByShopifyId($shopifyId);
 }

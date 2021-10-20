@@ -6,6 +6,7 @@ use App\Models\Books;
 use App\Repositories\AccessTokenRepository;
 use App\Repositories\BooksRepository;
 use App\Services\Shopify\ShopifyStore;
+use Faker\Generator as Faker;
 
 /**
  * Class BooksController
@@ -25,6 +26,10 @@ class BooksController extends Controller
      * @var BooksRepository
      */
     private $booksRepository;
+    /**
+     * @var Faker
+     */
+    private $faker;
 
     /**
      * BooksController constructor.
@@ -35,11 +40,13 @@ class BooksController extends Controller
     public function __construct(
         AccessTokenRepository $accessTokenRepository,
         ShopifyStore $shopifyStore,
-        BooksRepository $booksRepository
+        BooksRepository $booksRepository,
+        Faker $faker
     ) {
         $this->accessTokenRepository = $accessTokenRepository;
         $this->shopifyStore = $shopifyStore;
         $this->booksRepository = $booksRepository;
+        $this->faker = $faker;
     }
 
     /**
@@ -52,7 +59,7 @@ class BooksController extends Controller
         $allBooks = [];
 
         foreach ($books as $bookSP) {
-            $bookDB = $this->booksRepository->save($bookSP);
+            $bookDB = $this->booksRepository->save($bookSP, $this->faker);
             $allBooks[] = [
                 'shopify_product_id' => $bookDB->shopify_product_id,
                 'title'              => $bookSP->title,
