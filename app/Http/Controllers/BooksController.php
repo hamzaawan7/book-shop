@@ -36,6 +36,7 @@ class BooksController extends Controller
      * @param AccessTokenRepository $accessTokenRepository
      * @param ShopifyStore $shopifyStore
      * @param BooksRepository $booksRepository
+     * @param Faker $faker
      */
     public function __construct(
         AccessTokenRepository $accessTokenRepository,
