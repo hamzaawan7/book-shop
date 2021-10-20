@@ -13,11 +13,11 @@ interface BooksRepositoryInterface
      * @param $faker
      * @return Books
      */
-    public function save($bookSP, $faker): Books;
+    public function save($bookSP, $faker);
 
     /**
      * @param $shopifyId
      * @return Books
      */
-    public function getByShopifyId($shopifyId): Books;
+    public function getByShopifyId($shopifyId);
 }

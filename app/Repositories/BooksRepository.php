@@ -15,7 +15,7 @@ class BooksRepository implements BooksRepositoryInterface
      * @param $faker
      * @return Books
      */
-    public function save($bookSP, $faker): Books
+    public function save($bookSP, $faker)
     {
         $book = $this->getByShopifyId($bookSP->id);
 
@@ -36,7 +36,7 @@ class BooksRepository implements BooksRepositoryInterface
      * @param $shopifyId
      * @return Books
      */
-    public function getByShopifyId($shopifyId): Books
+    public function getByShopifyId($shopifyId)
     {
         return Books::where('shopify_product_id', $shopifyId)->first();
     }
