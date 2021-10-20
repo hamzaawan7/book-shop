@@ -9,10 +9,11 @@ use App\Models\Books;
 interface BooksRepositoryInterface
 {
     /**
-     * @param $book
+     * @param $bookSP
+     * @param $faker
      * @return Books
      */
-    public function save($book, $faker);
+    public function save($bookSP, $faker): Books;
 
     /**
      * @param $shopifyId

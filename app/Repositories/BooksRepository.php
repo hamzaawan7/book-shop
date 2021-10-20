@@ -11,10 +11,11 @@ use App\Models\Books;
 class BooksRepository implements BooksRepositoryInterface
 {
     /**
-     * @param $book
+     * @param $bookSP
+     * @param $faker
      * @return Books
      */
-    public function save($bookSP, $faker)
+    public function save($bookSP, $faker): Books
     {
         $book = $this->getByShopifyId($bookSP->id);
 
