@@ -13,6 +13,10 @@ code {
 }
 
 * {
-    font-size: 30px;
+    font-size: 20px;
+}
+
+.card {
+    margin-top: 100px;
 }
   

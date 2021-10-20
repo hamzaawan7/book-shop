@@ -1,6 +1,8 @@
 import axios from 'axios';
 import {Link} from 'react-router-dom';
 import React, {Component} from 'react';
+import Table from 'react-bootstrap/Table'
+import Container from 'react-bootstrap/Container'
 import {
     Card,
     CardBody,
@@ -39,53 +41,56 @@ class Home extends Component {
 
     render() {
         return (
-            this.state.loading ? this.loading() : <div className="animated fadeIn">
-                <Row>
-                    <Col xs="12" sm="12" lg="12">
-                        <Card>
-                            <CardHeader>
-                                All Available Books
-                            </CardHeader>
-                            <CardBody>
-                                <table striped bordered hover size="sm">
-                                    <thead>
-                                    <tr>
-                                        <th>Book Name</th>
-                                        <th>Author Name</th>
-                                        <th>Price</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {
-                                        !this.state.books || this.state.books.length === 0 ?
+            this.state.loading ? this.loading() :
+                <Container fluid="sm">
+                    <div className="animated fadeIn">
+                        <Row>
+                            <Col xs="12" sm="12" lg="12">
+                                <Card>
+                                    <CardHeader>
+                                        All Available Books
+                                    </CardHeader>
+                                    <CardBody>
+                                        <Table striped bordered hover>
+                                            <thead>
                                             <tr>
-                                                <td className="text-center" colSpan="100">No Books Found</td>
+                                                <th>Book Name</th>
+                                                <th>Author Name</th>
+                                                <th>Price</th>
                                             </tr>
-                                            :
-                                            this.state.books.map((book, bookIndex) => {
-                                                return <tr key={bookIndex}>
-                                                    <td>
-                                                        <Link
-                                                            to={"books/" + book.shopify_product_id}>
-                                                            {book.title}
-                                                        </Link>
-                                                    </td>
-                                                    <td>
-                                                        {book.author}
-                                                    </td>
-                                                    <td>
-                                                        {book.price}
-                                                    </td>
-                                                </tr>
-                                            })
-                                    }
-                                    </tbody>
-                                </table>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                </Row>
-            </div>
+                                            </thead>
+                                            <tbody>
+                                            {
+                                                !this.state.books || this.state.books.length === 0 ?
+                                                    <tr>
+                                                        <td className="text-center" colSpan="100">No Books Found</td>
+                                                    </tr>
+                                                    :
+                                                    this.state.books.map((book, bookIndex) => {
+                                                        return <tr key={bookIndex}>
+                                                            <td>
+                                                                <Link
+                                                                    to={"books/" + book.shopify_product_id}>
+                                                                    {book.title}
+                                                                </Link>
+                                                            </td>
+                                                            <td>
+                                                                {book.author}
+                                                            </td>
+                                                            <td>
+                                                                {book.price}
+                                                            </td>
+                                                        </tr>
+                                                    })
+                                            }
+                                            </tbody>
+                                        </Table>
+                                    </CardBody>
+                                </Card>
+                            </Col>
+                        </Row>
+                    </div>
+                </Container>
         );
     }
 }
